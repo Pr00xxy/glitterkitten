@@ -17,7 +17,7 @@ required.add_argument('--config',     dest='config',     action='store', default
 required.add_argument('--source_dir', dest='source_dir', action='store', default=None, required=True, help='Source root for files')
 
 optional.add_argument('--threads',    dest='threads',    action='store', default=1, help='Amount of concurrent threads')
-optional.add_argument('--types',      dest='types',      action='store', default=[], help='File types to encode. eg \'png\'')
+optional.add_argument('--types',      dest='types',      action='store', default='jpg,png', help='File types to encode. default: jpg,png')
 optional.add_argument('--matches',    dest='matches',    action='store', default=[], help='Glob match files, matches all by default')
 optional.add_argument('--result_dir', dest='result_dir', action='store', default=None, help='Target location for encoded file, leave empty for same as source')
 
@@ -67,8 +67,8 @@ class Glitterkitten(object):
 
         print('Files:    {0}'.format(self.file_no))
         print('Threads: {0} \n'.format(self.threads))
+        
         time.sleep(1)
-
         start = time.time()
 
         try:
@@ -158,10 +158,7 @@ class Glitterkitten(object):
         return result_array
 
     def get_all_file_types(self):
-        if not self.types is []:
-            return self.types.split(',')
-        else:
-            return ['*']
+        return self.types.split(',')
 
 
 glitterkitten = Glitterkitten(
