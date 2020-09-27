@@ -7,7 +7,6 @@ import argparse
 import time
 import sys
 import os
-import re
 
 parser = argparse.ArgumentParser(description='description')
 
@@ -76,8 +75,9 @@ class Glitterkitten(object):
         start = time.time()
 
         try:
-            splits = list(chunk(self.file_array, self.threads))
-            thread_pool = self.create_thread_pool(splits)
+
+            chunks = list(chunk(self.file_array, self.threads))
+            thread_pool = self.create_thread_pool(chunks)
 
             for thread in thread_pool:
                 thread.start()
