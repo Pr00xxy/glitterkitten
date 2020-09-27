@@ -59,14 +59,15 @@ class Glitterkitten(object):
         self.matches = matches
 
     def run(self):
-        raw_file_collection = self.get_all_input_files()
 
-        if len(raw_file_collection) is 0:
+        file_collection = self.get_all_input_files()
+
+        if len(file_collection) is 0:
             print('Could not find any files')
             return
 
-        self.file_array = raw_file_collection
-        self.file_no = len(raw_file_collection)
+        self.file_array = file_collection
+        self.file_no = len(file_collection)
 
         print('Files:   {0}'.format(self.file_no))
         print('Threads: {0} \n'.format(self.threads))
