@@ -76,7 +76,7 @@ class Glitterkitten(object):
         start = time.time()
 
         try:
-            splits = list(self._chunks(self.file_array, self.threads))
+            splits = list(chunk(self.file_array, self.threads))
             thread_pool = self.create_thread_pool(splits)
 
             for thread in thread_pool:
@@ -94,18 +94,6 @@ class Glitterkitten(object):
         stop = time.time()
 
         print('Images processed: {0} \nTime: {1}s'.format(self.file_no, format(stop - start, '.4f')))
-
-    @staticmethod
-    def _chunks(seq, num):
-        avg = len(seq) / float(num)
-        out = []
-        last = 0.0
-
-        while last < len(seq):
-            out.append(seq[int(last):int(last + avg)])
-            last += avg
-
-        return out
 
     def create_thread_pool(self, splits):
         threads = []
@@ -132,14 +120,14 @@ class Glitterkitten(object):
                 if self.purge:
                     if file_exists(webp_file):
                         print('({0}/{1}) Deleting existing {2} {3}'.format(self.progress, self.file_no, '?', webp_file))
-                        os.remove(webp_file)
+                        remove_file(webp_file)
 
                 if not file_exists(webp_file):
                     webp.cwebp(str(file), webp_file, self.config)
 
                 if self.check_size:
                     if os.path.getsize(webp_file) > os.path.getsize(orginal_file):
-                        os.remove(webp_file)
+                        remove_file(webp_file)
                         result = '×'
 
                 print('({0}/{1}) {2} {3}'.format(self.progress, self.file_no, result, webp_file))
@@ -166,6 +154,23 @@ class Glitterkitten(object):
 
 def file_exists(file: str):
     return os.path.exists(file)
+
+
+def remove_file(file: str):
+    return os.remove(file)
+
+
+def chunk(seq, num):
+    avg = len(seq) / float(num)
+    out = []
+    last = 0.0
+
+    while last < len(seq):
+        # TODO: what the fuck does this do?
+        out.append(seq[int(last):int(last + avg)])
+        last += avg
+
+    return out
 
 
 glitterkitten = Glitterkitten(
