@@ -112,6 +112,7 @@ class Glitterkitten(object):
         processed = 0
 
         for file in files:
+            file = str(file)
             try:
                 self.progress += 1
                 processed += 1
@@ -120,8 +121,8 @@ class Glitterkitten(object):
                 if self.should_die():
                     sys.exit(1)
 
-                webp_file = '{0}.webp'.format(str(file))
-                orginal_file = str(file)
+                webp_file = '{0}.webp'.format(file)
+                orginal_file = file
 
                 if self.purge:
                     if file_exists(webp_file):
@@ -129,7 +130,7 @@ class Glitterkitten(object):
                         remove_file(webp_file)
 
                 if not file_exists(webp_file):
-                    webp.cwebp(str(file), webp_file, self.config)
+                    webp.cwebp(file, webp_file, self.config)
 
                 if self.check_size:
                     if os.path.getsize(webp_file) > os.path.getsize(orginal_file):
