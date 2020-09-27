@@ -59,7 +59,7 @@ class Glitterkitten(object):
 
     def run(self):
 
-        file_collection = self.get_all_input_files()
+        file_collection = self.get_all_input_files(self.types)
 
         if len(file_collection) is 0:
             print('Could not find any files')
@@ -76,7 +76,7 @@ class Glitterkitten(object):
         try:
 
             chunks = list(chunk(file_collection, self.threads))
-            thread_pool = self.create_thread_pool(chunks)
+            thread_pool = self.create_thread_pool(chunks, self.threads)
 
             for thread in thread_pool:
                 thread.start()
@@ -101,9 +101,9 @@ class Glitterkitten(object):
     def should_die(self):
         return self.thread_kill
 
-    def create_thread_pool(self, splits):
+    def create_thread_pool(self, splits, threads: int):
         threads = []
-        for i in range(self.threads):
+        for i in range(threads):
             t = threading.Thread(target=self.transcode_file, args=(i, splits[i],))
             threads.append(t)
         return threads
@@ -145,17 +145,14 @@ class Glitterkitten(object):
 
         return True
 
-    def get_all_input_files(self):
-        file_types = self.get_all_file_types()
+    def get_all_input_files(self, types: str):
+        file_types = types.split(',')
         result_array = []
         for file_type in file_types:
             for file in Path(self.source_dir).glob('**/*.' + file_type):
                 result_array.append(file)
 
         return result_array
-
-    def get_all_file_types(self):
-        return self.types.split(',')
 
 
 def file_exists(file: str):
