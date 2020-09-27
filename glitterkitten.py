@@ -112,34 +112,37 @@ class Glitterkitten(object):
         processed = 0
 
         for file in files:
+
+            if self.should_die():
+                sys.exit(1)
+
             original_file = str(file)
-            try:
-                self.progress += 1
-                processed += 1
-                result = '✓'
 
-                if self.should_die():
-                    sys.exit(1)
+            self.progress += 1
+            processed += 1
+            result = '✓'
 
-                webp_file = '{0}.webp'.format(original_file)
 
-                if self.purge:
-                    if file_exists(webp_file):
-                        print('({0}/{1}) Deleting existing {2} {3}'.format(self.progress, self.file_no, '?', webp_file))
-                        remove_file(webp_file)
+            webp_file = '{0}.webp'.format(original_file)
 
-                if not file_exists(webp_file):
+            if self.purge:
+                if file_exists(webp_file):
+                    print('({0}/{1}) Deleting existing {2} {3}'.format(self.progress, self.file_no, '?', webp_file))
+                    remove_file(webp_file)
+
+            if not file_exists(webp_file):
+                try:
                     webp.cwebp(original_file, webp_file, self.config)
+                except Exception as e:
+                    print('Failed transcoding file: {0} {1}'.format(file, repr(e)))
+                    continue
 
-                if self.check_size:
-                    if os.path.getsize(webp_file) > os.path.getsize(original_file):
-                        remove_file(webp_file)
-                        result = '×'
+            if self.check_size:
+                if os.path.getsize(webp_file) > os.path.getsize(original_file):
+                    remove_file(webp_file)
+                    result = '×'
 
-                print('({0}/{1}) {2} {3}'.format(self.progress, self.file_no, result, webp_file))
-
-            except Exception as e:
-                print('Failed transcoding file: {0} {1}'.format(file, repr(e)))
+            print('({0}/{1}) {2} {3}'.format(self.progress, self.file_no, result, webp_file))
 
         print('Thread {0} Completed. Processed {1}/{2}'.format(worker_id, processed, len(files)))
 
