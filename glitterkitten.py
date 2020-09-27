@@ -89,6 +89,7 @@ class Glitterkitten(object):
 
         except (KeyboardInterrupt, SystemExit):
             self.thread_kill = True
+            print('Premature exit by user')
             sys.exit(1)
 
         stop = time.time()
