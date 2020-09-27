@@ -10,30 +10,35 @@ import os
 import re
 
 parser = argparse.ArgumentParser(description='description')
+
 required = parser.add_argument_group('required arguments')
 optional = parser.add_argument_group('optional arguments')
 
-required.add_argument('--config',     dest='config',     action='store', default=None, required=True, help='cwebp arguments')
-required.add_argument('--source_dir', dest='source_dir', action='store', default=None, required=True, help='Source root for files')
+required.add_argument('--config', dest='config', action='store', default=None, required=True, help='cwebp arguments')
+required.add_argument('--source_dir', dest='source_dir', action='store', default=None, required=True,
+                      help='Source root for files')
 
-optional.add_argument('--threads',    dest='threads',    action='store', default=1, help='Amount of concurrent threads')
-optional.add_argument('--types',      dest='types',      action='store', default='jpg,png', help='File types to encode. default: jpg,png')
-optional.add_argument('--matches',    dest='matches',    action='store', default=[], help='Glob match files, matches all by default')
-optional.add_argument('--result_dir', dest='result_dir', action='store', default=None, help='Target location for encoded file, leave empty for same as source')
+optional.add_argument('--threads', dest='threads', action='store', default=1, help='Amount of concurrent threads')
+optional.add_argument('--types', dest='types', action='store', default='jpg,png',
+                      help='File types to encode. default: jpg,png')
+optional.add_argument('--matches', dest='matches', action='store', default=[],
+                      help='Glob match files, matches all by default')
+optional.add_argument('--result_dir', dest='result_dir', action='store', default=None,
+                      help='Target location for encoded file, leave empty for same as source')
 
-optional.add_argument('-d',           dest='purge',      action='store_true', default=False, help='Override existing webp files')
-optional.add_argument('-check_size',  dest='check_size', action='store_true', default=False, help='Revert encoding if resulting webp > source')
+optional.add_argument('-d', dest='purge', action='store_true', default=False, help='Override existing webp files')
+optional.add_argument('-check_size', dest='check_size', action='store_true', default=False,
+                      help='Revert encoding if resulting webp > source')
 
 args = parser.parse_args()
 
 
 class Glitterkitten(object):
-    
     file_array = None
     file_no = None
     progress = 0
     thread_kill = False
-    
+
     def __init__(
             self,
             config,
@@ -53,21 +58,20 @@ class Glitterkitten(object):
         self.result_dir = result_dir
         self.purge = purge
         self.matches = matches
-        
 
     def run(self):
         raw_file_collection = self.get_all_input_files()
-        
+
         if len(raw_file_collection) is 0:
             print('Could not find any files')
             return
-        
+
         self.file_array = raw_file_collection
         self.file_no = len(raw_file_collection)
 
-        print('Files:    {0}'.format(self.file_no))
+        print('Files:   {0}'.format(self.file_no))
         print('Threads: {0} \n'.format(self.threads))
-        
+
         time.sleep(1)
         start = time.time()
 
@@ -86,11 +90,10 @@ class Glitterkitten(object):
         except (KeyboardInterrupt, SystemExit):
             self.thread_kill = True
             sys.exit(1)
-            
-        stop = time.time()
-        
-        print('Images transcoded: {0} \nTime: {1}s'.format(self.file_no, format(stop - start, '.4f')))
 
+        stop = time.time()
+
+        print('Images processed: {0} \nTime: {1}s'.format(self.file_no, format(stop - start, '.4f')))
 
     @staticmethod
     def _chunks(seq, num):
@@ -127,12 +130,12 @@ class Glitterkitten(object):
                 orginal_file = str(file)
 
                 if self.purge:
-                    if os.path.exists(webp_file):
+                    if file_exists(webp_file):
                         print('({0}/{1}) Deleting existing {2} {3}'.format(self.progress, self.file_no, '?', webp_file))
                         os.remove(webp_file)
-                
-                if not os.path.exists(webp_file):
-                    webp.cwebp(str(file),  webp_file, self.config)
+
+                if not file_exists(webp_file):
+                    webp.cwebp(str(file), webp_file, self.config)
 
                 if self.check_size:
                     if os.path.getsize(webp_file) > os.path.getsize(orginal_file):
@@ -154,11 +157,15 @@ class Glitterkitten(object):
         for file_type in file_types:
             for file in Path(self.source_dir).glob('**/*.' + file_type):
                 result_array.append(file)
-        
+
         return result_array
 
     def get_all_file_types(self):
         return self.types.split(',')
+
+
+def file_exists(file: str):
+    return os.path.exists(file)
 
 
 glitterkitten = Glitterkitten(
