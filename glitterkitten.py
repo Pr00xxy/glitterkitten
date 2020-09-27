@@ -87,13 +87,19 @@ class Glitterkitten(object):
                     break
 
         except (KeyboardInterrupt, SystemExit):
-            self.thread_kill = True
+            self.kill_workers()
             print('Premature exit by user')
             sys.exit(1)
 
         stop = time.time()
 
         print('Images processed: {0} \nTime: {1}s'.format(self.file_no, format(stop - start, '.4f')))
+
+    def kill_workers(self):
+        self.thread_kill = True
+
+    def should_die(self):
+        return self.thread_kill
 
     def create_thread_pool(self, splits):
         threads = []
@@ -111,7 +117,7 @@ class Glitterkitten(object):
                 processed += 1
                 result = '✓'
 
-                if self.thread_kill is True:
+                if self.should_die():
                     sys.exit(1)
 
                 webp_file = '{0}.webp'.format(str(file))
