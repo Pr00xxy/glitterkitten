@@ -101,9 +101,9 @@ class Glitterkitten(object):
     def should_die(self):
         return self.thread_kill
 
-    def create_thread_pool(self, splits, threads: int):
+    def create_thread_pool(self, splits, thread_count: int):
         threads = []
-        for i in range(threads):
+        for i in range(thread_count):
             t = threading.Thread(target=self.transcode_file, args=(i, splits[i],))
             threads.append(t)
         return threads
