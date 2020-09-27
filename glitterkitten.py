@@ -117,13 +117,11 @@ class Glitterkitten(object):
                 sys.exit(1)
 
             original_file = str(file)
+            webp_file = '{0}.webp'.format(original_file)
 
             self.progress += 1
             processed += 1
             result = '✓'
-
-
-            webp_file = '{0}.webp'.format(original_file)
 
             if self.purge:
                 if file_exists(webp_file):
