@@ -33,7 +33,6 @@ args = parser.parse_args()
 
 
 class Glitterkitten(object):
-    file_array = None
     file_no = None
     progress = 0
     thread_kill = False
@@ -66,7 +65,6 @@ class Glitterkitten(object):
             print('Could not find any files')
             return
 
-        self.file_array = file_collection
         self.file_no = len(file_collection)
 
         print('Files:   {0}'.format(self.file_no))
@@ -77,7 +75,7 @@ class Glitterkitten(object):
 
         try:
 
-            chunks = list(chunk(self.file_array, self.threads))
+            chunks = list(chunk(file_collection, self.threads))
             thread_pool = self.create_thread_pool(chunks)
 
             for thread in thread_pool:
