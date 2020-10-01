@@ -15,15 +15,15 @@ required = parser.add_argument_group('required arguments')
 optional = parser.add_argument_group('optional arguments')
 
 required.add_argument('--config', dest='config', action='store', default=None, required=True, help='cwebp arguments')
-
 required.add_argument('--source_dir', dest='source_dir', action='store', default=None, required=True, help='Source root for files')
+required.add_argument('--result_dir', dest='result_dir', action='store', default=None, help='Target location for encoded file, leave empty for same as source')
 
 optional.add_argument('--threads', dest='threads', action='store', default=1, help='Amount of concurrent threads')
 optional.add_argument('--types', dest='types', action='store', default='jpg,png', help='File types to encode. default: jpg,png')
 optional.add_argument('--matches', dest='matches', action='store', default=[], help='Glob match files, matches all by default')
-optional.add_argument('--result_dir', dest='result_dir', action='store', default=None, help='Target location for encoded file, leave empty for same as source')
-optional.add_argument('-d', dest='purge', action='store_true', default=False, help='Override existing webp files')
-optional.add_argument('-check_size', dest='check_size', action='store_true', default=False, help='Revert encoding if resulting webp > source')
+
+optional.add_argument('-d', dest='purge', action='store_true', default=False, help='Delete existing webp file')
+optional.add_argument('-check_size', dest='check_size', action='store_true', default=False, help='E')
 
 args = parser.parse_args()
 
