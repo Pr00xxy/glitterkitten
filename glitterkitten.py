@@ -113,7 +113,8 @@ class Glitterkitten(object):
                 sys.exit(1)
 
             original_file = str(file)
-            webp_file = '{0}.webp'.format(original_file)
+
+            webp_file = self.get_new_file_path('{0}.webp'.format(original_file))
 
             self.progress += 1
             processed += 1
@@ -126,9 +127,10 @@ class Glitterkitten(object):
 
             if not file_exists(webp_file):
                 try:
+                    create_file_path(webp_file)
                     webp.cwebp(original_file, webp_file, self.config)
                 except Exception as e:
-                    print('Failed transcoding file: {0} {1}'.format(file, repr(e)))
+                    print('Failed transcoding file: {0} {1}'.format(webp_file, repr(e)))
                     continue
 
             if self.check_size:
@@ -151,6 +153,11 @@ class Glitterkitten(object):
 
         return result_array
 
+    def get_new_file_path(self, file: str):
+        new_path = file
+        new_path = new_path.replace(self.source_dir, self.result_dir)
+        return new_path
+
 
 def file_exists(file: str):
     return os.path.exists(file)
@@ -158,6 +165,11 @@ def file_exists(file: str):
 
 def remove_file(file: str):
     return os.remove(file)
+
+
+def create_file_path(file: str):
+    if not os.path.exists(os.path.dirname(file)):
+        return os.makedirs(os.path.dirname(file))
 
 
 def chunk(seq, num):

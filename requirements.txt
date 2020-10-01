@@ -1,1 +1,6 @@
 webptools
+cmake
+scikit-build
+scikit-image
+opencv-python
+imutils
